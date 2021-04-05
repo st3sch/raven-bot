@@ -10,10 +10,9 @@ function processEnv(name){
     return envvar
 }
 
-// 
+// Get environment vars and check if they are set correctly
 const valheimBotToken       = processEnv("TOKEN")
 const valheimVoiceChannelId = processEnv("VHM_VOICE_CHANNEL_ID")
-
 
 
 const client = new Discord.Client()
@@ -31,15 +30,15 @@ client.on("message", msg => {
 })
 
 client.on("voiceStateUpdate", (oldMember, newMember) => {
-    console.log(oldMember.channelID)
-    console.log(newMember.channelID)
-
     let hasMemberJoinedValheimVoiceChannel = (oldMember.channelID != valheimVoiceChannelId && newMember.channelID == valheimVoiceChannelId)
     let hasMemberLeftValheimVoiceChannel = (oldMember.channelID == valheimVoiceChannelId && newMember.channelID != valheimVoiceChannelId)
     if ( hasMemberJoinedValheimVoiceChannel || hasMemberLeftValheimVoiceChannel) {
-        console.log(hasMemberJoinedValheimVoiceChannel)
-        console.log(hasMemberLeftValheimVoiceChannel)
-        
+        client.channels.fetch(valheimVoiceChannelId)
+            .then(channel => {
+                let membersInChannel = channel.members.keyArray().length
+                console.log(membersInChannel)
+            })
+            .catch(console.error)
     }
 })
 
