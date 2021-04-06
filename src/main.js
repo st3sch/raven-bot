@@ -10,7 +10,9 @@ function getReqEnvVar(name){
     return envvar
 }
 
-// Get environment vars and check if they are set correctly
+
+
+// Get environment vars and check if they are defined
 const vhmBotToken           = getReqEnvVar("TOKEN")
 const vhmControlChannelId   = getReqEnvVar("VHM_VOICE_CHANNEL_ID")
 const awsApiGatewayUrl      = getReqEnvVar("AWS_API_GATEWAY_URL")
@@ -23,13 +25,27 @@ client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`)
 })
 
-client.on("message", msg => {
+async function getServerStatus() {
+    const url = awsApiGatewayUrl + "/serverstatus"
+    const res = await fetch(url)
+    const body = await res.text()
+    console.log(body)
+    serverStatus = JSON.parse(body)
+    return serverStatus
+}
+
+client.on("message", async (msg)  => {
   if (msg.content === "status") {
-    fetch(process.env.STATUS_URL)
-    .then(res => res.text())
-    .then(body => msg.reply(body))
-   }
+    //getServerStatus().then(serverStatus => {
+    //    msg.reply(serverStatus.running)
+    //}).catch (console.log)
+    serverStatus = await getServerStatus()
+    msg.reply(serverStatus.running)
+    
+  } 
 })
+
+
 
 client.on("voiceStateUpdate", (oldMember, newMember) => {
     let hasMemberJoinedValheimVoiceChannel = (oldMember.channelID != vhmControlChannelId && newMember.channelID == vhmControlChannelId)
@@ -42,6 +58,6 @@ client.on("voiceStateUpdate", (oldMember, newMember) => {
             })
             .catch(console.error)
     }
-})
+body})
 
 client.login(vhmBotToken)
