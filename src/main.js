@@ -1,7 +1,7 @@
 const Discord = require("discord.js")
 const fetch = require("node-fetch")
 
-function processEnv(name){
+function getReqEnvVar(name){
     const envvar = process.env[name]
     if (envvar === undefined) { 
         console.error ("Environment variable not set: " + name)
@@ -11,8 +11,10 @@ function processEnv(name){
 }
 
 // Get environment vars and check if they are set correctly
-const valheimBotToken       = processEnv("TOKEN")
-const valheimVoiceChannelId = processEnv("VHM_VOICE_CHANNEL_ID")
+const vhmBotToken           = getReqEnvVar("TOKEN")
+const vhmControlChannelId   = getReqEnvVar("VHM_VOICE_CHANNEL_ID")
+const awsApiGatewayUrl      = getReqEnvVar("AWS_API_GATEWAY_URL")
+const awsApiGatewayKey      = getReqEnvVar("AWS_API_GATEWAY_KEY")
 
 
 const client = new Discord.Client()
@@ -30,10 +32,10 @@ client.on("message", msg => {
 })
 
 client.on("voiceStateUpdate", (oldMember, newMember) => {
-    let hasMemberJoinedValheimVoiceChannel = (oldMember.channelID != valheimVoiceChannelId && newMember.channelID == valheimVoiceChannelId)
-    let hasMemberLeftValheimVoiceChannel = (oldMember.channelID == valheimVoiceChannelId && newMember.channelID != valheimVoiceChannelId)
+    let hasMemberJoinedValheimVoiceChannel = (oldMember.channelID != vhmControlChannelId && newMember.channelID == vhmControlChannelId)
+    let hasMemberLeftValheimVoiceChannel = (oldMember.channelID == vhmControlChannelId && newMember.channelID != vhmControlChannelId)
     if ( hasMemberJoinedValheimVoiceChannel || hasMemberLeftValheimVoiceChannel) {
-        client.channels.fetch(valheimVoiceChannelId)
+        client.channels.fetch(vhmControlChannelId)
             .then(channel => {
                 let membersInChannel = channel.members.keyArray().length
                 console.log(membersInChannel)
@@ -42,4 +44,4 @@ client.on("voiceStateUpdate", (oldMember, newMember) => {
     }
 })
 
-client.login(valheimBotToken)
+client.login(vhmBotToken)
