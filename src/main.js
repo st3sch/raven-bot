@@ -31,16 +31,19 @@ async function getServerStatus() {
     const body = await res.text()
     console.log(body)
     serverStatus = JSON.parse(body)
+    serverStatus.ip = serverStatus.ip.substring(0, serverStatus.ip.length - 5)
     return serverStatus
 }
 
 client.on("message", async (msg)  => {
   if (msg.content === "status") {
-    //getServerStatus().then(serverStatus => {
-    //    msg.reply(serverStatus.running)
-    //}).catch (console.log)
     serverStatus = await getServerStatus()
-    msg.reply(serverStatus.running)
+    if (serverStatus.running) {
+        msg.reply("The portal is open. The koordinates are: " + serverStatus.ip)    
+    } else {
+        msg.reply("The portal is closed. Join Blubbheim to open it")
+    }
+    
     
   } 
 })
