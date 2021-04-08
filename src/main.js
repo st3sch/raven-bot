@@ -13,8 +13,9 @@ function getReqEnvVar(name){
 
 
 // Get environment vars and check if they are defined
-const vhmBotToken           = getReqEnvVar("TOKEN")
-const vhmControlChannelId   = getReqEnvVar("VHM_VOICE_CHANNEL_ID")
+const ravenBotToken           = getReqEnvVar("RAVEN_BOT_TOKEN")
+const ravenControlChannelId   = getReqEnvVar("RAVEN_CONTROL_CHANNEL_ID")
+const ravenLogChannelId   = getReqEnvVar("RAVEN_LOG_CHANNEL_ID")
 const awsApiGatewayUrl      = getReqEnvVar("AWS_API_GATEWAY_URL")
 const awsApiGatewayKey      = getReqEnvVar("AWS_API_GATEWAY_KEY")
 
@@ -38,22 +39,22 @@ client.on("message", async (msg)  => {
   if (msg.content === "status") {
     serverStatus = await getServerStatus()
     if (serverStatus.running) {
-        msg.reply("The portal is open. The coordinates are: " + serverStatus.ip)    
+        msg.reply("The portal is open. The world is reachable at: " + serverStatus.ip)    
     } else {
-        msg.reply("The portal is closed. Join Blubbheim to open it")
+        msg.reply("The portal is closed. Join blubbheim channel to open it")
     }
   } 
 })
 
 
 function hasMemberCountOfControlChannelChanged(oldMember, newMember){
-    const memberJoined  = (oldMember.channelID != vhmControlChannelId && newMember.channelID == vhmControlChannelId)
-    const memberLeft    = (oldMember.channelID == vhmControlChannelId && newMember.channelID != vhmControlChannelId)
+    const memberJoined  = (oldMember.channelID != ravenControlChannelId && newMember.channelID == ravenControlChannelId)
+    const memberLeft    = (oldMember.channelID == ravenControlChannelId && newMember.channelID != ravenControlChannelId)
     return (memberJoined || memberLeft) 
 }
 
 async function countMembersInControlChannel() {
-    const channel = await client.channels.fetch(vhmControlChannelId)
+    const channel = await client.channels.fetch(ravenControlChannelId)
     return channel.members.keyArray().length 
 }
 
@@ -96,4 +97,4 @@ client.on("voiceStateUpdate", async (oldMember, newMember) => {
     }
 })
 
-client.login(vhmBotToken)
+client.login(ravenBotToken)
