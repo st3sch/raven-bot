@@ -13,11 +13,11 @@ function getReqEnvVar(name){
 
 
 // Get environment vars and check if they are defined
-const ravenBotToken           = getReqEnvVar("RAVEN_BOT_TOKEN")
-const ravenControlChannelId   = getReqEnvVar("RAVEN_CONTROL_CHANNEL_ID")
-const ravenLogChannelId   = getReqEnvVar("RAVEN_LOG_CHANNEL_ID")
-const awsApiGatewayUrl      = getReqEnvVar("AWS_API_GATEWAY_URL")
-const awsApiGatewayKey      = getReqEnvVar("AWS_API_GATEWAY_KEY")
+const ravenBotToken             = getReqEnvVar("RAVEN_BOT_TOKEN")
+const ravenControlChannelId     = getReqEnvVar("RAVEN_CONTROL_CHANNEL_ID")
+const ravenLogChannelId         = getReqEnvVar("RAVEN_LOG_CHANNEL_ID")
+const awsApiGatewayUrl          = getReqEnvVar("AWS_API_GATEWAY_URL")
+const awsApiGatewayKey          = getReqEnvVar("AWS_API_GATEWAY_KEY")
 
 
 const client = new Discord.Client()
@@ -74,16 +74,16 @@ async function checkForDesiredState(hasBeenStarted, numberOfTries = 0){
     let serverStatus = await getServerStatus()
     if (serverStatus.running == hasBeenStarted) {
         if (serverStatus.running) {
-            console.log("... activation complete. You can pass it at " + serverStatus.ip)
+            console.log("The portal is open. Pass it at: " + serverStatus.ip)
         } else {
-            console.log("... deactivation complete.")
+            console.log("The portal is closed now.")
         }
     }  else {
         if (numberOfTries < 6) {
             numberOfTries = numberOfTries + 1
             setTimeout(checkForDesiredState, 10000, hasBeenStarted, numberOfTries)
         } else {
-            console.log("... stopping asking for status")
+            console.log("I got bored. Stopped checking the portal.")
         }
     }   
 }
