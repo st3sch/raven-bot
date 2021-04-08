@@ -71,11 +71,11 @@ async function fetchStartStopUrl(desiredCount) {
 }
 
 async function startServer() {
-    await fetchStartStopUrl(1)
+    fetchStartStopUrl(1)
 }
 
 async function stopServer() {
-    await fetchStartStopUrl(0)
+    fetchStartStopUrl(0)
 } 
 
 client.on("voiceStateUpdate", async (oldMember, newMember) => {
