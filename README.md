@@ -1,3 +1,3 @@
-# vhm-discord-bot
+# raven-bot
 
-VHM is a discord bot to start / stop / status a valheim server.
+Raven-bot is a discord bot to start / stop / status a valheim server.
