@@ -27,7 +27,7 @@ async function getServerStatus() {
     const url = awsApiGatewayUrl + "/serverstatus"
     const res = await fetch(url)
     const body = await res.text()
-    console.log("Desired Count: " + desiredCount + " Response:" + body)
+    console.log("Response:" + body)
     serverStatus = JSON.parse(body)
     serverStatus.ip = serverStatus.ip.substring(0, serverStatus.ip.length - 5) // throw away port
     return serverStatus
