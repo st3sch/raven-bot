@@ -70,20 +70,24 @@ async function fetchStartStopUrl(desiredCount) {
     console.log(body)       
 }
 
+function writeToLogChannel(message) {
+    client.channels.cache.get(ravenLogChannelId).send(message)
+}
+
 async function checkForDesiredState(hasBeenStarted, numberOfTries = 0){
     let serverStatus = await getServerStatus()
     if (serverStatus.running == hasBeenStarted) {
         if (serverStatus.running) {
-            console.log("The portal is open. Pass it at: " + serverStatus.ip)
+            writeToLogChannel("The portal is now open. Pass it at: " + serverStatus.ip)
         } else {
-            console.log("The portal is closed now.")
+            writeToLogChannel("The portal is closed now.")
         }
     }  else {
         if (numberOfTries < 6) {
             numberOfTries = numberOfTries + 1
             setTimeout(checkForDesiredState, 10000, hasBeenStarted, numberOfTries)
         } else {
-            console.log("I got bored. Stopped checking the portal.")
+            writeToLogChannel("I got bored. Stopped checking the portal.")
         }
     }   
 }
@@ -103,10 +107,10 @@ async function stopServer() {
 async function runServerControlAction(){
         numberOfMembersInControlChannel = await countMembersInControlChannel()
         if (numberOfMembersInControlChannel > 0) {
-            console.log("Activating the portal ...")
+            writeToLogChannel("Opening the portal ...")
             startServer()
         } else {
-            console.log("Deactivation the portal ...")
+            writeToLogChannel("Closing the portal ...")
             stopServer()
         }
 }
@@ -115,7 +119,7 @@ async function runServerControlAction(){
 client.on("voiceStateUpdate", (oldMember, newMember) => {
     if (hasMemberCountOfControlChannelChanged(oldMember, newMember)) {
         runServerControlAction().catch((e) => {
-            console.log("Something went wrong")
+            writeToLogChannel("Something went wrong")
             console.error(e)
         })    
     }
