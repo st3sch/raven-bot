@@ -70,30 +70,54 @@ async function fetchStartStopUrl(desiredCount) {
     console.log(body)       
 }
 
+async function checkForDesiredState(hasBeenStarted, numberOfTries = 0){
+    let serverStatus = await getServerStatus()
+    if (serverStatus.running == hasBeenStarted) {
+        if (serverStatus.running) {
+            console.log("... activation complete. You can pass it at " + serverStatus.ip)
+        } else {
+            console.log("... deactivation complete.")
+        }
+    }  else {
+        if (numberOfTries < 6) {
+            numberOfTries = numberOfTries + 1
+            setTimeout(checkForDesiredState, 10000, hasBeenStarted, numberOfTries)
+        } else {
+            console.log("... stopping asking for status")
+        }
+    }   
+}
+
 async function startServer() {
     fetchStartStopUrl(1)
+    checkForDesiredState(true)
 }
 
 async function stopServer() {
     fetchStartStopUrl(0)
-} 
+    checkForDesiredState(false)
+}
 
-client.on("voiceStateUpdate", async (oldMember, newMember) => {
-    try {
-        if (!hasMemberCountOfControlChannelChanged(oldMember, newMember)) {
-            return
-        }
 
+
+async function runServerControlAction(){
         numberOfMembersInControlChannel = await countMembersInControlChannel()
-        if (currentMembersInControlChannel > 0) {
-            console.log("starting server")
-            //startServer()
+        if (numberOfMembersInControlChannel > 0) {
+            console.log("Activating the portal ...")
+            startServer()
         } else {
-            console.log("stopping server")
-            //stopServer()
+            console.log("Deactivation the portal ...")
+            stopServer()
         }
-    } catch (e) {
-        console.error(e)
+}
+
+
+client.on("voiceStateUpdate", (oldMember, newMember) => {
+    if (hasMemberCountOfControlChannelChanged(oldMember, newMember)) {
+        runServerControlAction().catch((e) => {
+            console.log("Something went wrong")
+            console.error(e)
+        })    
     }
 })
 
