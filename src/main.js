@@ -79,17 +79,17 @@ async function stopServer() {
 
 client.on("voiceStateUpdate", async (oldMember, newMember) => {
     try {
-        if (!hasMemberCountOfControlChannelChanged) {
+        if (!hasMemberCountOfControlChannelChanged(oldMember, newMember)) {
             return
         }
 
-        currentMembersInControlChannel = await countMembersInControlChannel()
+        numberOfMembersInControlChannel = await countMembersInControlChannel()
         if (currentMembersInControlChannel > 0) {
             console.log("starting server")
-            startServer()
+            //startServer()
         } else {
             console.log("stopping server")
-            stopServer()
+            //stopServer()
         }
     } catch (e) {
         console.error(e)
