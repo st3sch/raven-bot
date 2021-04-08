@@ -3,8 +3,8 @@
     "discord.js": "^12.5.3",
     "node-fetch": "^2.6.1"
   },
-  "name": "vhm-discord-bot",
-  "description": "VHM is a discord bot to start / stop / status a valheim server.",
+  "name": "raven-bot",
+  "description": "Raven-bot is a discord bot to start / stop / status a valheim server.",
   "version": "1.0.0",
   "main": "src/main.js",
   "devDependencies": {},
@@ -14,12 +14,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/st3sch/vhm-discord-bot.git"
+    "url": "git+https://github.com/st3sch/raven-bot.git"
   },
   "author": "st3sch",
   "license": "Unlicense",
   "bugs": {
-    "url": "https://github.com/st3sch/vhm-discord-bot/issues"
+    "url": "https://github.com/st3sch/raven-bot/issues"
   },
-  "homepage": "https://github.com/st3sch/vhm-discord-bot#readme"
+  "homepage": "https://github.com/st3sch/raven-bot#readme"
 }
