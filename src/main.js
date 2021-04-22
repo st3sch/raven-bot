@@ -34,13 +34,22 @@ async function getServerStatus() {
 }
 
 function getMemberCountChange(oldMember, newMember){
+    let memberCountChange = {
+        amount: 0,
+        memberName: ""
+    }
+
     if (oldMember.channelID != ravenControlChannelId && newMember.channelID == ravenControlChannelId) {
-        return 1
+        memberCountChange.amount = 1
+        memberCountChange.memberName = newMember.member.displayName
     }
+
     if (oldMember.channelID == ravenControlChannelId && newMember.channelID != ravenControlChannelId) {
-        return -1
+        memberCountChange.amount = -1
+        memberCountChange.memberName = oldMember.member.displayName
     }
-    return 0
+
+    return memberCountChange
 }
 
 async function countMembersInControlChannel() {
@@ -94,8 +103,8 @@ async function stopServer() {
 async function runServerControlAction(memberCountChange){
         numberOfMembersInControlChannel = await countMembersInControlChannel()
         if (numberOfMembersInControlChannel > 0) {
-            if (memberCountChange == 1) {
-                writeToLogChannel("Opening the portal ...")
+            if (memberCountChange.amount == 1) {
+                writeToLogChannel(memberCountChange.memberName + " entered the portal room ...")
                 startServer()
             }
         } else {
@@ -106,7 +115,7 @@ async function runServerControlAction(memberCountChange){
 
 client.on("voiceStateUpdate", (oldMember, newMember) => {
     memberCountChange = getMemberCountChange(oldMember, newMember)
-    if (memberCountChange != 0) {
+    if (memberCountChange.amount != 0) {
         runServerControlAction(memberCountChange).catch((e) => {
             writeToLogChannel("Something went wrong")
             console.error(e)
