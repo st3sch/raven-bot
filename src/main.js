@@ -33,10 +33,14 @@ async function getServerStatus() {
     return serverStatus
 }
 
-function hasMemberCountOfControlChannelChanged(oldMember, newMember){
-    const memberJoined  = (oldMember.channelID != ravenControlChannelId && newMember.channelID == ravenControlChannelId)
-    const memberLeft    = (oldMember.channelID == ravenControlChannelId && newMember.channelID != ravenControlChannelId)
-    return (memberJoined || memberLeft) 
+function getMemberCountChange(oldMember, newMember){
+    if (oldMember.channelID != ravenControlChannelId && newMember.channelID == ravenControlChannelId) {
+        return 1
+    }
+    if (oldMember.channelID == ravenControlChannelId && newMember.channelID != ravenControlChannelId) {
+        return -1
+    }
+    return 0
 }
 
 async function countMembersInControlChannel() {
@@ -63,7 +67,7 @@ async function checkForDesiredState(hasBeenStarted, numberOfTries = 0){
     let serverStatus = await getServerStatus()
     if (serverStatus.running == hasBeenStarted) {
         if (serverStatus.running) {
-            writeToLogChannel("The portal is now open. Pass it at: " + serverStatus.ip)
+            writeToLogChannel("The portal is open at: " + serverStatus.ip)
         } else {
             writeToLogChannel("The portal is closed now.")
         }
@@ -87,11 +91,13 @@ async function stopServer() {
     checkForDesiredState(false)
 }
 
-async function runServerControlAction(){
+async function runServerControlAction(memberCountChange){
         numberOfMembersInControlChannel = await countMembersInControlChannel()
         if (numberOfMembersInControlChannel > 0) {
-            writeToLogChannel("Opening the portal ...")
-            startServer()
+            if (memberCountChange == 1) {
+                writeToLogChannel("Opening the portal ...")
+                startServer()
+            }
         } else {
             writeToLogChannel("Closing the portal ...")
             stopServer()
@@ -99,8 +105,9 @@ async function runServerControlAction(){
 }
 
 client.on("voiceStateUpdate", (oldMember, newMember) => {
-    if (hasMemberCountOfControlChannelChanged(oldMember, newMember)) {
-        runServerControlAction().catch((e) => {
+    memberCountChange = getMemberCountChange(oldMember, newMember)
+    if (memberCountChange != 0) {
+        runServerControlAction(memberCountChange).catch((e) => {
             writeToLogChannel("Something went wrong")
             console.error(e)
         })    
