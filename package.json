@@ -5,7 +5,7 @@
   },
   "name": "raven-bot",
   "description": "Raven-bot is a discord bot to start / stop / status a valheim server.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "src/main.js",
   "devDependencies": {},
   "scripts": {
