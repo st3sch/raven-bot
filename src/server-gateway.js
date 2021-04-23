@@ -18,7 +18,8 @@ function buildStartStopUrl(desiredCount) {
     return awsApiGatewayUrl + "/startstop?key=" + awsApiGatewayKey + "&desiredCount=" + desiredCount;
 }
 
-async function fetchStartStopUrl(desiredCount) {
+
+async function callStartStopUrl(desiredCount) {
     const url = buildStartStopUrl(desiredCount);
     const res = await fetch(url);
     const body = await res.text();
@@ -27,5 +28,5 @@ async function fetchStartStopUrl(desiredCount) {
 
 module.exports = {
     getServerStatus,
-    fetchStartStopUrl
+    callStartStopUrl
 }
