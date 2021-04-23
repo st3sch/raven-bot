@@ -61,12 +61,12 @@ async function checkForDesiredState(hasBeenStarted, numberOfTries = 0){
 }
 
 async function startServer() {
-    serverGateway.fetchStartStopUrl(1)
+    serverGateway.callStartStopUrl(1)
     checkForDesiredState(true)
 }
 
 async function stopServer() {
-    serverGateway.fetchStartStopUrl(0)
+    serverGateway.callStartStopUrl(0)
     checkForDesiredState(false)
 }
 
