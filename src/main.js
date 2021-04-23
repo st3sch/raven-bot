@@ -1,12 +1,12 @@
-const { getReqEnvVar } = require("./helpers")
+const helpers = require("./helpers")
 
 const Discord = require("discord.js")
 const fetch = require("node-fetch")
 
 // Get environment vars and check if they are defined
-const ravenBotToken             = getReqEnvVar("RAVEN_BOT_TOKEN")
-const ravenControlChannelId     = getReqEnvVar("RAVEN_CONTROL_CHANNEL_ID")
-const ravenLogChannelId         = getReqEnvVar("RAVEN_LOG_CHANNEL_ID")
+const ravenBotToken             = helpers.getReqEnvVar("RAVEN_BOT_TOKEN")
+const ravenControlChannelId     = helpers.getReqEnvVar("RAVEN_CONTROL_CHANNEL_ID")
+const ravenLogChannelId         = helpers.getReqEnvVar("RAVEN_LOG_CHANNEL_ID")
 
 const client = new Discord.Client()
 
@@ -14,8 +14,8 @@ client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`)
 })
 
-const awsApiGatewayUrl          = getReqEnvVar("AWS_API_GATEWAY_URL")
-const awsApiGatewayKey          = getReqEnvVar("AWS_API_GATEWAY_KEY")
+const awsApiGatewayUrl          = helpers.getReqEnvVar("AWS_API_GATEWAY_URL")
+const awsApiGatewayKey          = helpers.getReqEnvVar("AWS_API_GATEWAY_KEY")
 
 async function getServerStatus() {
     const url = awsApiGatewayUrl + "/serverstatus"
