@@ -14,14 +14,15 @@ function getReqEnvVar(name){
 const ravenBotToken             = getReqEnvVar("RAVEN_BOT_TOKEN")
 const ravenControlChannelId     = getReqEnvVar("RAVEN_CONTROL_CHANNEL_ID")
 const ravenLogChannelId         = getReqEnvVar("RAVEN_LOG_CHANNEL_ID")
-const awsApiGatewayUrl          = getReqEnvVar("AWS_API_GATEWAY_URL")
-const awsApiGatewayKey          = getReqEnvVar("AWS_API_GATEWAY_KEY")
 
 const client = new Discord.Client()
 
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`)
 })
+
+const awsApiGatewayUrl          = getReqEnvVar("AWS_API_GATEWAY_URL")
+const awsApiGatewayKey          = getReqEnvVar("AWS_API_GATEWAY_KEY")
 
 async function getServerStatus() {
     const url = awsApiGatewayUrl + "/serverstatus"
