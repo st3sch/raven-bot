@@ -1,37 +1,18 @@
-const Discord = require("discord.js")
-const fetch = require("node-fetch")
+const helpers = require("./helpers")
+const serverGateway = require("./server-gateway")
 
-function getReqEnvVar(name){
-    const envvar = process.env[name]
-    if (envvar === undefined) { 
-        console.error ("Environment variable not set: " + name)
-        process.exit(1)    
-    }
-    return envvar
-}
+const Discord = require("discord.js")
 
 // Get environment vars and check if they are defined
-const ravenBotToken             = getReqEnvVar("RAVEN_BOT_TOKEN")
-const ravenControlChannelId     = getReqEnvVar("RAVEN_CONTROL_CHANNEL_ID")
-const ravenLogChannelId         = getReqEnvVar("RAVEN_LOG_CHANNEL_ID")
-const awsApiGatewayUrl          = getReqEnvVar("AWS_API_GATEWAY_URL")
-const awsApiGatewayKey          = getReqEnvVar("AWS_API_GATEWAY_KEY")
+const ravenBotToken             = helpers.getReqEnvVar("RAVEN_BOT_TOKEN")
+const ravenControlChannelId     = helpers.getReqEnvVar("RAVEN_CONTROL_CHANNEL_ID")
+const ravenLogChannelId         = helpers.getReqEnvVar("RAVEN_LOG_CHANNEL_ID")
 
 const client = new Discord.Client()
 
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`)
 })
-
-async function getServerStatus() {
-    const url = awsApiGatewayUrl + "/serverstatus"
-    const res = await fetch(url)
-    const body = await res.text()
-    console.log("Response:" + body)
-    serverStatus = JSON.parse(body)
-    serverStatus.ip = serverStatus.ip.substring(0, serverStatus.ip.length - 5) // throw away port
-    return serverStatus
-}
 
 function getMemberCountChange(oldMember, newMember){
     let memberCountChange = {
@@ -57,23 +38,12 @@ async function countMembersInControlChannel() {
     return channel.members.keyArray().length 
 }
 
-function buildStartStopUrl(desiredCount) {
-    return awsApiGatewayUrl + "/startstop?key=" + awsApiGatewayKey + "&desiredCount=" + desiredCount 
-}
-
-async function fetchStartStopUrl(desiredCount) {
-    const url = buildStartStopUrl(desiredCount)
-    const res = await fetch(url)
-    const body = await res.text()
-    console.log("Desired Count: " + desiredCount + " Response:" + body)       
-}
-
 function writeToLogChannel(message) {
     client.channels.cache.get(ravenLogChannelId).send(message)
 }
 
 async function checkForDesiredState(hasBeenStarted, numberOfTries = 0){
-    let serverStatus = await getServerStatus()
+    let serverStatus = await serverGateway.getServerStatus()
     if (serverStatus.running == hasBeenStarted) {
         if (serverStatus.running) {
             writeToLogChannel("The portal is open at: " + serverStatus.ip)
@@ -91,12 +61,12 @@ async function checkForDesiredState(hasBeenStarted, numberOfTries = 0){
 }
 
 async function startServer() {
-    fetchStartStopUrl(1)
+    serverGateway.callStartStopUrl(1)
     checkForDesiredState(true)
 }
 
 async function stopServer() {
-    fetchStartStopUrl(0)
+    serverGateway.callStartStopUrl(0)
     checkForDesiredState(false)
 }
 
