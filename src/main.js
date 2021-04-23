@@ -1,14 +1,7 @@
+const { getReqEnvVar } = require("./helpers")
+
 const Discord = require("discord.js")
 const fetch = require("node-fetch")
-
-function getReqEnvVar(name){
-    const envvar = process.env[name]
-    if (envvar === undefined) { 
-        console.error ("Environment variable not set: " + name)
-        process.exit(1)    
-    }
-    return envvar
-}
 
 // Get environment vars and check if they are defined
 const ravenBotToken             = getReqEnvVar("RAVEN_BOT_TOKEN")
