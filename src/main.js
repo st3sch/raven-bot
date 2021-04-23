@@ -33,6 +33,17 @@ async function getServerStatus() {
     return serverStatus
 }
 
+function buildStartStopUrl(desiredCount) {
+    return awsApiGatewayUrl + "/startstop?key=" + awsApiGatewayKey + "&desiredCount=" + desiredCount 
+}
+
+async function fetchStartStopUrl(desiredCount) {
+    const url = buildStartStopUrl(desiredCount)
+    const res = await fetch(url)
+    const body = await res.text()
+    console.log("Desired Count: " + desiredCount + " Response:" + body)       
+}
+
 function getMemberCountChange(oldMember, newMember){
     let memberCountChange = {
         amount: 0,
@@ -55,17 +66,6 @@ function getMemberCountChange(oldMember, newMember){
 async function countMembersInControlChannel() {
     const channel = await client.channels.fetch(ravenControlChannelId)
     return channel.members.keyArray().length 
-}
-
-function buildStartStopUrl(desiredCount) {
-    return awsApiGatewayUrl + "/startstop?key=" + awsApiGatewayKey + "&desiredCount=" + desiredCount 
-}
-
-async function fetchStartStopUrl(desiredCount) {
-    const url = buildStartStopUrl(desiredCount)
-    const res = await fetch(url)
-    const body = await res.text()
-    console.log("Desired Count: " + desiredCount + " Response:" + body)       
 }
 
 function writeToLogChannel(message) {
