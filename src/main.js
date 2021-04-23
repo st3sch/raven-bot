@@ -1,7 +1,7 @@
 const helpers = require("./helpers")
+const serverGateway = require("./server-gateway")
 
 const Discord = require("discord.js")
-const fetch = require("node-fetch")
 
 // Get environment vars and check if they are defined
 const ravenBotToken             = helpers.getReqEnvVar("RAVEN_BOT_TOKEN")
@@ -13,30 +13,6 @@ const client = new Discord.Client()
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`)
 })
-
-const awsApiGatewayUrl          = helpers.getReqEnvVar("AWS_API_GATEWAY_URL")
-const awsApiGatewayKey          = helpers.getReqEnvVar("AWS_API_GATEWAY_KEY")
-
-async function getServerStatus() {
-    const url = awsApiGatewayUrl + "/serverstatus"
-    const res = await fetch(url)
-    const body = await res.text()
-    console.log("Response:" + body)
-    serverStatus = JSON.parse(body)
-    serverStatus.ip = serverStatus.ip.substring(0, serverStatus.ip.length - 5) // throw away port
-    return serverStatus
-}
-
-function buildStartStopUrl(desiredCount) {
-    return awsApiGatewayUrl + "/startstop?key=" + awsApiGatewayKey + "&desiredCount=" + desiredCount 
-}
-
-async function fetchStartStopUrl(desiredCount) {
-    const url = buildStartStopUrl(desiredCount)
-    const res = await fetch(url)
-    const body = await res.text()
-    console.log("Desired Count: " + desiredCount + " Response:" + body)       
-}
 
 function getMemberCountChange(oldMember, newMember){
     let memberCountChange = {
@@ -67,7 +43,7 @@ function writeToLogChannel(message) {
 }
 
 async function checkForDesiredState(hasBeenStarted, numberOfTries = 0){
-    let serverStatus = await getServerStatus()
+    let serverStatus = await serverGateway.getServerStatus()
     if (serverStatus.running == hasBeenStarted) {
         if (serverStatus.running) {
             writeToLogChannel("The portal is open at: " + serverStatus.ip)
@@ -85,12 +61,12 @@ async function checkForDesiredState(hasBeenStarted, numberOfTries = 0){
 }
 
 async function startServer() {
-    fetchStartStopUrl(1)
+    serverGateway.fetchStartStopUrl(1)
     checkForDesiredState(true)
 }
 
 async function stopServer() {
-    fetchStartStopUrl(0)
+    serverGateway.fetchStartStopUrl(0)
     checkForDesiredState(false)
 }
 
